@@ -9,15 +9,12 @@ export interface InputProps {
   placeholder?: string;
   /** On click item handler */
   onSelectItem: (item: string) => void;
-  /** debounce time */
-  debounceTime?: number;
 }
 
-const Input = ({ placeholder, onSelectItem, debounceTime = 100 }: InputProps) => {
+const Input = ({ placeholder, onSelectItem}: InputProps) => {
   // DO NOT remove this log
   console.log("input re-render");
 
-  const inputRef = useRef<HTMLInputElement>(null);
   const [tempValue, setTempValue] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [searchData, setSearchData] = useState<string[]>([]);
@@ -71,14 +68,13 @@ const Input = ({ placeholder, onSelectItem, debounceTime = 100 }: InputProps) =>
   return (
     <div className={"input-search-component"}>
       <input
-        ref={inputRef}
         placeholder={placeholder}
         onChange={debounce((e: ChangeEvent<HTMLInputElement>) => {
           e.preventDefault();
           const searchTerm = e.target?.value;
           setTempValue(searchTerm);
           handleCallAPI(searchTerm || "");
-        }, debounceTime)}
+        }, 300)}
         className={"input-search-component__input-search"}
       />
       {!!tempValue && (
