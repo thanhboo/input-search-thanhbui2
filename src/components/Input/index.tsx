@@ -11,7 +11,7 @@ export interface InputProps {
   onSelectItem: (item: string) => void;
 }
 
-const Input = ({ placeholder, onSelectItem}: InputProps) => {
+const Input = ({ placeholder, onSelectItem }: InputProps) => {
   // DO NOT remove this log
   console.log("input re-render");
 
@@ -36,7 +36,7 @@ const Input = ({ placeholder, onSelectItem}: InputProps) => {
   const renderResultBlock = (searchData: string[]) => {
     return (
       <>
-        {!!searchData?.length ? (
+        {searchData?.length ? (
           <div className={"input-search-component__result-block--has-data"}>
             {searchData.map((item, index) => {
               return (
@@ -46,7 +46,7 @@ const Input = ({ placeholder, onSelectItem}: InputProps) => {
                   onClick={(
                     e: React.MouseEvent<HTMLDivElement, MouseEvent>
                   ) => {
-                    e.stopPropagation;
+                    e.stopPropagation();
                     onSelectItem(item);
                   }}
                 >
