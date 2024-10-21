@@ -17,9 +17,6 @@ export interface ITodoListProps {
 let isTheFirstHit = true;
 
 const TodoMVC = () => {
-  // DO NOT remove this log
-  console.log("input re-render");
-
   const [todoList, setTodoList] = useState<ITodoListProps[]>([]);
   const [todoCompletedList, setTodoCompletedList] = useState<ITodoListProps[]>(
     []
@@ -110,8 +107,6 @@ const TodoMVC = () => {
   };
 
   const onChangingTodoTaskValue = (id: number, value: string) => {
-    console.log(value);
-    
     setTodoList((prevState) =>
       prevState.map((todo) =>
         todo.id === id ? { ...todo, value: value } : todo
@@ -120,10 +115,20 @@ const TodoMVC = () => {
   };
 
   useEffect(() => {
+    localStorage?.setItem("todoList", JSON.stringify(todoList));
     if (!todoList?.length) return;
     setTodoCompletedList(todoList.filter((todo) => todo.isCompleted));
     setTodoInCompleteList(todoList.filter((todo) => !todo.isCompleted));
   }, [todoList]);
+
+  useEffect(() => {
+    const itemTodoList = JSON.parse(
+      localStorage.getItem("todoList") as string
+    ) as ITodoListProps[];
+    if (itemTodoList) {
+      setTodoList(itemTodoList);
+    }
+  }, []);
 
   // Your code start here
   return (
@@ -134,9 +139,7 @@ const TodoMVC = () => {
           onClick={() => {
             onMarkDoneAllTasks();
           }}
-        >
-          ✅
-        </div>
+        ></div>
         <input
           type="text"
           value={inputValue}

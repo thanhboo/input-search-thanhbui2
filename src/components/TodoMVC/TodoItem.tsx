@@ -47,12 +47,17 @@ const TodoItem = ({
   };
 
   return (
-    <div className={"todo-mvc-component__todo-item"}>
+    <div
+      className={"todo-mvc-component__todo-item"}
+      onClick={handleOnDoubleClickTodoItem}
+    >
       {!isDoubleClicked && (
         <>
           <button
             className={"todo-mvc-component__checkbox-btn"}
-            onClick={() => {
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              e.preventDefault();
+              e.stopPropagation();
               onChangingTodoTaskStatus(todoItem.id);
             }}
           >
@@ -70,15 +75,14 @@ const TodoItem = ({
               ></span>
             )}
           </button>
-          <label
-            className={"todo-mvc-component__todo-label"}
-            onClick={handleOnDoubleClickTodoItem}
-          >
+          <label className={"todo-mvc-component__todo-label"}>
             {todoItem.value}
           </label>
           <button
             className={"todo-mvc-component__remove-btn"}
-            onClick={() => {
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              e.preventDefault();
+              e.stopPropagation();
               onRemovingTodoTask(todoItem.id);
             }}
           >
