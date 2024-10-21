@@ -1,3 +1,5 @@
+import TodoFilterOption from "./TodoFilterOption";
+import TodoItem from "./TodoItem";
 import "./todoMVC.scss";
 import { useEffect, useState } from "react";
 
@@ -11,6 +13,8 @@ export interface ITodoListProps {
   isCompleted: boolean;
   id: number;
 }
+
+let isTheFirstHit = true;
 
 const TodoMVC = () => {
   // DO NOT remove this log
@@ -26,7 +30,7 @@ const TodoMVC = () => {
   const [inputValue, setInputValue] = useState<string>("");
   const [todoListToShow, setTodoListToShow] = useState("All");
   const [isCheckedAll, setIsCheckedAll] = useState<boolean>(
-    todoList.some((todo) => todo.isCompleted)
+    isTheFirstHit && !todoList.some((todo) => !todo.isCompleted)
   );
 
   const handleInput = (
@@ -40,7 +44,7 @@ const TodoMVC = () => {
     }
 
     if (e.type === "keydown" && (e as React.KeyboardEvent).key === "Enter") {
-      console.log("Add todo", inputValue);
+      if (!e?.target?.value) return;
       const preparedTodoTask = {
         isCompleted: false,
         value: e?.target?.value,
@@ -87,11 +91,31 @@ const TodoMVC = () => {
   };
 
   const onMarkDoneAllTasks = () => {
-    setIsCheckedAll(!isCheckedAll);
+    if (isTheFirstHit) {
+      setIsCheckedAll(true);
+      setTodoList((prevState) =>
+        prevState.map((todo) => {
+          return { ...todo, isCompleted: true };
+        })
+      );
+      isTheFirstHit = false;
+    } else {
+      setIsCheckedAll(!isCheckedAll);
+      setTodoList((prevState) =>
+        prevState.map((todo) => {
+          return { ...todo, isCompleted: !isCheckedAll };
+        })
+      );
+    }
+  };
+
+  const onChangingTodoTaskValue = (id: number, value: string) => {
+    console.log(value);
+    
     setTodoList((prevState) =>
-      prevState.map((todo) => {
-        return { ...todo, isCompleted: isCheckedAll };
-      })
+      prevState.map((todo) =>
+        todo.id === id ? { ...todo, value: value } : todo
+      )
     );
   };
 
@@ -127,109 +151,37 @@ const TodoMVC = () => {
           {todoListToShow === "All" &&
             todoList.map((item) => {
               return (
-                <div className={"todo-mvc-component__todo-item"} key={item.id}>
-                  <button
-                    className={"todo-mvc-component__checkbox-btn"}
-                    onClick={() => {
-                      onChangingTodoTaskStatus(item.id);
-                    }}
-                  >
-                    {item.isCompleted ? (
-                      <span
-                        className={
-                          "todo-mvc-component__checkbox-btn__icon todo-mvc-component__checkbox-btn__icon--completed"
-                        }
-                      ></span>
-                    ) : (
-                      <span
-                        className={
-                          "todo-mvc-component__checkbox-btn__icon todo-mvc-component__checkbox-btn__icon--not-yet"
-                        }
-                      ></span>
-                    )}
-                  </button>
-                  <label>{item.value}</label>
-                  <button
-                    className={"todo-mvc-component__remove-btn"}
-                    onClick={() => {
-                      onRemovingTodoTask(item.id);
-                    }}
-                  >
-                    &#10060;
-                  </button>
-                </div>
+                <TodoItem
+                  todoItem={item}
+                  onChangingTodoTaskStatus={onChangingTodoTaskStatus}
+                  onRemovingTodoTask={onRemovingTodoTask}
+                  key={item.id}
+                  onChangingTodoTaskValue={onChangingTodoTaskValue}
+                />
               );
             })}
           {todoListToShow === "Active" &&
             todoInCompleteList.map((item) => {
               return (
-                <div className={"todo-mvc-component__todo-item"} key={item.id}>
-                  <button
-                    className={"todo-mvc-component__checkbox-btn"}
-                    onClick={() => {
-                      onChangingTodoTaskStatus(item.id);
-                    }}
-                  >
-                    {item.isCompleted ? (
-                      <span
-                        className={
-                          "todo-mvc-component__checkbox-btn__icon todo-mvc-component__checkbox-btn__icon--completed"
-                        }
-                      ></span>
-                    ) : (
-                      <span
-                        className={
-                          "todo-mvc-component__checkbox-btn__icon todo-mvc-component__checkbox-btn__icon--not-yet"
-                        }
-                      ></span>
-                    )}
-                  </button>
-                  <label>{item.value}</label>
-                  <button
-                    className={"todo-mvc-component__remove-btn"}
-                    onClick={() => {
-                      onRemovingTodoTask(item.id);
-                    }}
-                  >
-                    &#10060;
-                  </button>
-                </div>
+                <TodoItem
+                  todoItem={item}
+                  onChangingTodoTaskStatus={onChangingTodoTaskStatus}
+                  onRemovingTodoTask={onRemovingTodoTask}
+                  key={item.id}
+                  onChangingTodoTaskValue={onChangingTodoTaskValue}
+                />
               );
             })}
           {todoListToShow === "Completed" &&
             todoCompletedList.map((item) => {
               return (
-                <div className={"todo-mvc-component__todo-item"} key={item.id}>
-                  <button
-                    className={"todo-mvc-component__checkbox-btn"}
-                    onClick={() => {
-                      onChangingTodoTaskStatus(item.id);
-                    }}
-                  >
-                    {item.isCompleted ? (
-                      <span
-                        className={
-                          "todo-mvc-component__checkbox-btn__icon todo-mvc-component__checkbox-btn__icon--completed"
-                        }
-                      ></span>
-                    ) : (
-                      <span
-                        className={
-                          "todo-mvc-component__checkbox-btn__icon todo-mvc-component__checkbox-btn__icon--not-yet"
-                        }
-                      ></span>
-                    )}
-                  </button>
-                  <label>{item.value}</label>
-                  <button
-                    className={"todo-mvc-component__remove-btn"}
-                    onClick={() => {
-                      onRemovingTodoTask(item.id);
-                    }}
-                  >
-                    &#10060;
-                  </button>
-                </div>
+                <TodoItem
+                  todoItem={item}
+                  onChangingTodoTaskStatus={onChangingTodoTaskStatus}
+                  onRemovingTodoTask={onRemovingTodoTask}
+                  key={item.id}
+                  onChangingTodoTaskValue={onChangingTodoTaskValue}
+                />
               );
             })}
           <div className={"todo-mvc-component__footer"}>
@@ -238,36 +190,21 @@ const TodoMVC = () => {
               {todoInCompleteList.length > 1 ? "s" : ""} left!
             </div>
             <div className={"todo-mvc-component__filters"}>
-              <div
-                className={`${"todo-mvc-component__filter"} ${
-                  todoListToShow === "All" ? "active" : ""
-                }`}
-                onClick={() => {
-                  onFilteringTodoTask("All");
-                }}
-              >
-                All
-              </div>
-              <div
-                className={`${"todo-mvc-component__filter"} ${
-                  todoListToShow === "Active" ? "active" : ""
-                }`}
-                onClick={() => {
-                  onFilteringTodoTask("Active");
-                }}
-              >
-                Active
-              </div>
-              <div
-                className={`${"todo-mvc-component__filter"} ${
-                  todoListToShow === "Completed" ? "active" : ""
-                }`}
-                onClick={() => {
-                  onFilteringTodoTask("Completed");
-                }}
-              >
-                Completed
-              </div>
+              <TodoFilterOption
+                isActive={todoListToShow === "All"}
+                todoListToShow={"All"}
+                onFilteringTodoTask={onFilteringTodoTask}
+              />
+              <TodoFilterOption
+                isActive={todoListToShow === "Active"}
+                todoListToShow={"Active"}
+                onFilteringTodoTask={onFilteringTodoTask}
+              />
+              <TodoFilterOption
+                isActive={todoListToShow === "Completed"}
+                todoListToShow={"Completed"}
+                onFilteringTodoTask={onFilteringTodoTask}
+              />
             </div>
             <div
               className={"todo-mvc-component__clear-complete-btn"}

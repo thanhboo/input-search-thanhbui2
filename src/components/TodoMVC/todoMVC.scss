@@ -124,4 +124,13 @@ html {
   &__clear-complete-btn {
     cursor: pointer;
   }
+
+  &__todo-item-input {
+    border: none;
+    padding-inline: 16px;
+  }
+
+  &__todo-label {
+    width: 100%;
+  }
 }
