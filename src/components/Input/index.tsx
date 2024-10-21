@@ -2,7 +2,7 @@ import "./input.scss";
 import { fetchData } from "../../utils/fetch-data";
 import { debounce } from "../../utils/deboucne";
 import Loader from "../Loader";
-import { ChangeEvent, useCallback, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useState } from "react";
 
 export interface InputProps {
   /** Placeholder of the input */
