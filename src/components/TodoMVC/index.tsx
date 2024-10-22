@@ -29,6 +29,7 @@ const TodoMVC = () => {
   const [isCheckedAll, setIsCheckedAll] = useState<boolean>(
     isTheFirstHit && !todoList.some((todo) => !todo.isCompleted)
   );
+  const listStatus = ["All", "Active", "Completed"];
 
   const handleInput = (
     e:
@@ -115,13 +116,6 @@ const TodoMVC = () => {
   };
 
   useEffect(() => {
-    localStorage?.setItem("todoList", JSON.stringify(todoList));
-    if (!todoList?.length) return;
-    setTodoCompletedList(todoList.filter((todo) => todo.isCompleted));
-    setTodoInCompleteList(todoList.filter((todo) => !todo.isCompleted));
-  }, [todoList]);
-
-  useEffect(() => {
     const itemTodoList = JSON.parse(
       localStorage.getItem("todoList") as string
     ) as ITodoListProps[];
@@ -129,6 +123,13 @@ const TodoMVC = () => {
       setTodoList(itemTodoList);
     }
   }, []);
+
+  useEffect(() => {
+    localStorage?.setItem("todoList", JSON.stringify(todoList));
+    if (!todoList?.length) return;
+    setTodoCompletedList(todoList.filter((todo) => todo.isCompleted));
+    setTodoInCompleteList(todoList.filter((todo) => !todo.isCompleted));
+  }, [todoList]);
 
   // Your code start here
   return (
@@ -151,40 +152,29 @@ const TodoMVC = () => {
       </div>
       {!!todoList?.length && (
         <div className={"todo-mvc-component__todo-list"}>
-          {todoListToShow === "All" &&
-            todoList.map((item) => {
+          {!!listStatus?.length &&
+            listStatus.map((status) => {
+              const isShow = todoListToShow === status;
+              const newTodoList =
+                todoListToShow === "All"
+                  ? todoList
+                  : todoListToShow === "Active"
+                  ? todoInCompleteList
+                  : todoCompletedList;
               return (
-                <TodoItem
-                  todoItem={item}
-                  onChangingTodoTaskStatus={onChangingTodoTaskStatus}
-                  onRemovingTodoTask={onRemovingTodoTask}
-                  key={item.id}
-                  onChangingTodoTaskValue={onChangingTodoTaskValue}
-                />
-              );
-            })}
-          {todoListToShow === "Active" &&
-            todoInCompleteList.map((item) => {
-              return (
-                <TodoItem
-                  todoItem={item}
-                  onChangingTodoTaskStatus={onChangingTodoTaskStatus}
-                  onRemovingTodoTask={onRemovingTodoTask}
-                  key={item.id}
-                  onChangingTodoTaskValue={onChangingTodoTaskValue}
-                />
-              );
-            })}
-          {todoListToShow === "Completed" &&
-            todoCompletedList.map((item) => {
-              return (
-                <TodoItem
-                  todoItem={item}
-                  onChangingTodoTaskStatus={onChangingTodoTaskStatus}
-                  onRemovingTodoTask={onRemovingTodoTask}
-                  key={item.id}
-                  onChangingTodoTaskValue={onChangingTodoTaskValue}
-                />
+                isShow &&
+                !!newTodoList?.length &&
+                newTodoList.map((item) => {
+                  return (
+                    <TodoItem
+                      todoItem={item}
+                      onChangingTodoTaskStatus={onChangingTodoTaskStatus}
+                      onRemovingTodoTask={onRemovingTodoTask}
+                      key={item.id}
+                      onChangingTodoTaskValue={onChangingTodoTaskValue}
+                    />
+                  );
+                })
               );
             })}
           <div className={"todo-mvc-component__footer"}>
@@ -193,21 +183,16 @@ const TodoMVC = () => {
               {todoInCompleteList.length > 1 ? "s" : ""} left!
             </div>
             <div className={"todo-mvc-component__filters"}>
-              <TodoFilterOption
-                isActive={todoListToShow === "All"}
-                todoListToShow={"All"}
-                onFilteringTodoTask={onFilteringTodoTask}
-              />
-              <TodoFilterOption
-                isActive={todoListToShow === "Active"}
-                todoListToShow={"Active"}
-                onFilteringTodoTask={onFilteringTodoTask}
-              />
-              <TodoFilterOption
-                isActive={todoListToShow === "Completed"}
-                todoListToShow={"Completed"}
-                onFilteringTodoTask={onFilteringTodoTask}
-              />
+              {!!listStatus?.length &&
+                listStatus.map((status) => {
+                  return (
+                    <TodoFilterOption
+                      isActive={todoListToShow === status}
+                      todoListToShow={status}
+                      onFilteringTodoTask={onFilteringTodoTask}
+                    />
+                  );
+                })}
             </div>
             <div
               className={"todo-mvc-component__clear-complete-btn"}
